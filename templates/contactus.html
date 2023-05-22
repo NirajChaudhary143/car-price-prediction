@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-container">
+    <!-- Theme Bg -->
+    <div class="theme-bg" style="background-color: #03045e;">
+        <div class="theme-contents m-auto">
+            <!-- <div class="theme-title">Machine Learning</div> -->
+            <!-- <div class="theme-title2"><h1>Contact Us</h1>
+            </div> -->
+            <!-- COntact Us Start -->
+            <div class="receive_data">
+                {% if name %}
+                  <div class="data">{{ name }}, thanks for contacting us!</div>
+                {% endif %}
+              </div>
+                <div class="contact-us content-width m-auto">
+                    <div class="contact-items">
+                        {% for x in list_contact %}
+                        <div class="contact-item">
+                            <div class="c-item1"><i class="{{x.icon}}" style="color: #89d8e3;"></i></div>
+                            <div class="c-item2">{{x.title}}</div>
+                            <div class="c-item3" style="text-transform: capitalize;">{{x.address}}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="contact-content m-auto">
+                        <div class="contact-form">
+                            <div class="theme-title2" style="text-align: center; color: #03045e;"><h1>Contact Us</h1></div>
+                            <form name="contact-form" action="{% url 'send-enquery' %}" method="post">
+                                {% csrf_token %}
+                                <div class="cotactForm-Data">
+                                    <input name="name" id="name" class="input" type="text" placeholder="Enter Your Name" required>
+                                    <input name="email" id="email" class="input" type="email" placeholder="Enter a valid email" required>
+                                    <textarea name="textBox" id="textBox" required></textarea>
+                                    <input type="submit" class="SendBtn" value="Send Message">
+                                </div>
+                                
+                            </form>
+                        </div>
+                    </div>
+                        
+                </div>
+
+
+            <!-- Contact Us End -->
+        </div>
+        <!-- <div class="search-container m-auto">
+        
+        </div> -->
+    
+     </div>
+     <!-- Theme Bg End -->
+
+
+{% endblock %}

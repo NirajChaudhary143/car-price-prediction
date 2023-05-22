@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="content-container">
+        <!-- Theme Bg -->
+        <div class="theme-bg">
+            <div class="theme-contents m-auto">
+                <div class="theme-title">Machine Learning</div>
+                <div class="theme-title2"><h1>Cars Price Prediction</h1>
+                </div>
+            </div>
+            <div class="search-container m-auto">
+            
+            </div>
+        
+         </div>
+         <!-- Theme Bg End -->
+         <!-- Prediction Container Start -->
+            <div class="predict-container m-auto content-width">
+                <div align="center"><h1>Welcome To Car Price Prediction</h1></div>
+                <!-- Predict Content Start -->
+                <div class="predict-content">
+                    <form action="/predict.html" method="POST">
+                        {% csrf_token %}
+                        <!-- Form Item Start -->
+                        <div class="formItem">
+                            <label class="Label" for="">Select The Company:</label><br>
+                        <select class="SelectItems" id="company" name="company" onchange="load_car_models(this.id,'car_model')" required="1">
+                            <option value="Select Company">Select Company</option>
+                            {% for company in companies %}
+                            <option value="{{company}}">{{company}}</option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                        </div>
+                        <!-- Form Item End -->
+                        <!-- Form Item Start -->
+                        <div class="formItem">
+                            <label class="Label" for="">Select The Model:</label><br>
+                        <select class="SelectItems" name="car_model" id="car_model" required="1">
+                            
+                        </select>
+                        <br>
+                        </div>
+                        <!-- Form Item End -->
+                        <!-- Form Item Start -->
+                        <div class="formItem">
+                            <label class="Label" for="">Select The Year Of Purchase:</label><br>
+                        <select class="SelectItems" name="year" id="year" required="1">
+                            {% for year in year %}
+                            <option value="{{year}}">{{year}}</option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                        </div>
+                        <!-- Form Item End -->
+                        <!-- Form Item Start -->
+                        <div class="formItem">
+                            <label class="Label" for="">Select The Fuel Type:</label><br>
+                        <select class="SelectItems" name="fuel_type" id="fuel_type">
+                            {% for fuel in fuel_type %}
+                            <option value="{{fuel}}">{{fuel}}</option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                        </div>
+                        <!-- Form Item End -->
+                        <!-- Form Item Start -->
+                        <div class="formItem">
+                            <label class="Label" for="">Enter The Numbers Of Kilometers That the Car Has Travelled:</label><br>
+                        <input class="SelectItems" type="text" name="kms_driven" id="kms_driven">
+                        <br>
+                        </div>
+                        <!-- Form Item End -->
+                            <input class="predict_btn" type="submit" value="Predict Car Price" onclick="predict_price()" >
+                    </form>
+                    <br>
+                    
+                </div>
+                <div class="m-auto content-width" style="text-align: center; margin: 10px 0px;">
+                    <h3><Span id="prediction_result"></Span></h3>
+                </div>
+                <!-- Predict COntent End -->
+            </div>
+
+         <!-- Prediction COntainer End -->
+    </div>
+   <!-- Used CAr Sell Conatiner -->
+   <div class="content-width m-auto theme-title2">
+    <h3>Previous Four Predicted Reults:</h3>
+   </div>
+<div class="predict-content content-width m-auto">
+    <!-- Items Container -->
+    <div class="items">
+        <div id="predictedLists"></div>
+        <!-- Item Start -->
+        {% for x in cardata %}
+        <div class="item">
+            <div class="item-content">
+                <!-- <div>Predicted: {{x.id}} </div> -->
+                <div>Company: {{x.company}} </div>
+                <div>Car Model: {{x.car_model}}</div>
+                <div>Year Of Purchase: {{x.year_of_purchase}}</div>
+                <div>Fuel Type: {{x.fuel_type}}</div>
+                <div>Total Kilometers Driven: {{x.kms_driven}} km</div>
+                <div>Predicted Price: {{x.predicted_price}} Rs.</div>
+                <!-- <div class="buy-btn-container"><button class="buy-btn">Buy Car</button></div> -->
+            </div>
+        </div>
+        {% endfor %}
+ <!-- Item End -->
+        
+    </div>
+    <!-- Items Conatiner end -->
+</div>
+<!-- Duplicate Paginator -->
+
+{% if cardata.paginator.num_pages > 1 %}
+<div class="content-width m-auto" style="background-color: rgb(96 79 79);padding-left: 20px;padding-bottom: 10px;">
+  <nav aria-label="...">
+    <ul class="pagination">
+      {% if cardata.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="/price-pridict/?page=1#predictedLists" tabindex="-1" aria-disabled="true">First</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="/price-pridict/?page={{cardata.previous_page_number}}#predictedLists" tabindex="-1" aria-disabled="true">Previous</a>
+      </li>
+      {% endif %}
+
+      {% if cardata.number > 3 %}
+      <li class="page-item disabled">
+        <span class="page-link">...</span>
+      </li>
+      {% endif %}
+
+      {% for n in cardata.paginator.page_range %}
+      {% if n > cardata.number|add:'-3' and n < cardata.number|add:'3' %}
+      <li class="page-item {% if cardata.number == n %}active{% endif %}">
+        <a class="page-link" href="/price-pridict/?page={{n}}#predictedLists">{{n}}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+
+      {% if cardata.number < cardata.paginator.num_pages|add:'-2' %}
+      <li class="page-item disabled">
+        <span class="page-link">...</span>
+      </li>
+      {% endif %}
+
+      {% if cardata.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="/price-pridict/?page={{cardata.next_page_number}}#predictedLists">Next</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="/price-pridict/?page={{cardata.paginator.num_pages}}#predictedLists">Last</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endif %}
+
+<!-- Duplicate Paginator End -->
+<!-- Used CAr Sell Conatiner -->
+    <!-- Script -->
+    <!-- <script src="static/js/prd.js/"></script> -->
+    <script>
+         function load_car_models(company_id,car_model_id)
+        {
+            var company2 = document.getElementById(company_id);
+            var car_model = document.getElementById(car_model_id);
+            car_model.value="";
+            car_model.innerHTML="";
+
+            {% for company in companies %}
+
+                if(company2.value == "{{ company }}"){
+                 
+                 {% for model in Car_model %}  
+                    
+                    {% if company in model %}
+                        var newOption = document.createElement("option");
+                        newOption.value = "{{ model }}";
+                        newOption.innerHTML = "{{ model }}";
+                        car_model.options.add(newOption);
+                    {% endif %}
+                  
+                {% endfor %}
+                }
+            {% endfor %}
+        }
+
+
+         // Prediction COde
+         function form_handler(event) {
+        event.preventDefault(); // Don't submit the form normally
+    }
+        function predict_price(){
+            // Supress Default Behaviour of form
+            document.querySelector('form').addEventListener("submit",form_handler);
+            var fd  = new FormData(document.querySelector('form'));
+            
+            var xhr= new XMLHttpRequest({mozSystem: true});
+            
+            xhr.open('POST','/predict/',true);
+        document.getElementById('prediction_result').innerHTML="Wait! Predicting Price.....";
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState == XMLHttpRequest.DONE){
+                document.getElementById('prediction_result').innerHTML="Predicted Price: "+xhr.responseText;
+
+            }
+        };
+
+        xhr.onload= function(){};
+
+        xhr.send(fd);
+            // Send ANd Receive data to predict method
+
+        }
+    </script>
+
+{% endblock %}
